@@ -4,30 +4,42 @@ using UnityEngine;
 
 public class CharacterController : MonoBehaviour
 {
-    public bool isJumping;
+    public bool isGrounded;
     public float speed;
-    public Vector2 jump;
     public float jumpHeight;
 
     void Start()
     {
-        //Temp use just to set the speed and height for now
+        //Temp use just to set the speed and jump height for now
+        isGrounded = false;
         speed = 3;
         jumpHeight = 7;
-        jump = new Vector2(0.0f, jumpHeight);
     }
     void Update()
     {
-        //Checks for player input
+        //Checks horizontal input
         Vector3 horInput = new Vector3(Input.GetAxis("Horizontal"), 0.0f, 0.0f);
-        float vertCheck = Input.GetAxis("Vertical");
-        Vector3 vertInput = new Vector3(0.0f, Input.GetAxis("Vertical"), 0.0f);
         //Moves the player
         transform.position = transform.position + horInput * speed * Time.deltaTime;
         //Makes the player jump
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            GetComponent<Rigidbody2D>().AddForce(jump, ForceMode2D.Impulse);
+            GetComponent<Rigidbody2D>().AddForce(new Vector2(0.0f, jumpHeight), ForceMode2D.Impulse);
+        }
+    }
+    //Checks if the player is on the ground
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+        }
+    }
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false;
         }
     }
 }
